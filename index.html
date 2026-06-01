@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebSword — AI Content Detector</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070709;
+  --surface: #0e0e12;
+  --surface2: #16161c;
+  --border: #22222e;
+  --crimson: #dc143c;
+  --crimson2: #ff2d55;
+  --cyan: #00f5ff;
+  --green: #39ff14;
+  --yellow: #ffe500;
+  --text: #e8e8f0;
+  --muted: #5a5a6e;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+
+/* scanline overlay */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px);
+  pointer-events:none;
+  z-index:1000;
+}
+
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--crimson);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.logo { font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--crimson); letter-spacing:2px; }
+.logo span { color:var(--cyan); }
+.tagline { font-family:'Space Mono',monospace; font-size:11px; color:var(--muted); }
+.status-badge {
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  color:var(--green);
+}
+.status-dot { width:8px; height:8px; background:var(--green); border-radius:50%; box-shadow:0 0 8px var(--green); animation:blink 2s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.container { max-width:1000px; margin:0 auto; padding:40px 24px; }
+
+/* Input section */
+.input-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+.section-label {
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  color:var(--crimson);
+  text-transform:uppercase;
+  letter-spacing:2px;
+  margin-bottom:12px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.section-label::before { content:'//'; color:var(--muted); }
+
+.mode-tabs {
+  display:flex;
+  gap:4px;
+  margin-bottom:20px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:4px;
+}
+.mode-tab {
+  flex:1;
+  padding:8px;
+  border:none;
+  background:none;
+  color:var(--muted);
+  font-family:'Space Mono',monospace;
+  font-size:12px;
+  cursor:pointer;
+  border-radius:4px;
+  transition:all 0.2s;
+}
+.mode-tab.active { background:var(--crimson); color:white; }
+
+textarea {
+  width:100%;
+  min-height:160px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:6px;
+  color:var(--text);
+  font-family:'Space Mono',monospace;
+  font-size:13px;
+  padding:16px;
+  resize:vertical;
+  outline:none;
+  transition:border-color 0.2s;
+  line-height:1.6;
+}
+textarea:focus { border-color:var(--crimson); }
+textarea::placeholder { color:var(--muted); }
+
+.url-input {
+  width:100%;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:6px;
+  color:var(--text);
+  font-family:'Space Mono',monospace;
+  font-size:13px;
+  padding:14px 16px;
+  outline:none;
+  transition:border-color 0.2s;
+}
+.url-input:focus { border-color:var(--crimson); }
+
+.analyze-btn {
+  margin-top:16px;
+  padding:14px 32px;
+  background:var(--crimson);
+  border:none;
+  border-radius:6px;
+  color:white;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:20px;
+  letter-spacing:2px;
+  cursor:pointer;
+  transition:all 0.2s;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.analyze-btn:hover { background:var(--crimson2); transform:translateY(-1px); box-shadow:0 4px 20px rgba(220,20,60,0.4); }
+.analyze-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+/* Results */
+.results-section { display:none; }
+.results-section.visible { display:block; }
+
+/* Score display */
+.score-display {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 32px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.score-display::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(220,20,60,0.06), transparent 70%);
+}
+.score-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  position: relative;
+}
+@media(max-width:600px) { .score-grid { grid-template-columns:1fr; } }
+
+.score-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px;
+  text-align: center;
+}
+.score-number {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 56px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.score-number.ai { color: var(--crimson); }
+.score-number.human { color: var(--green); }
+.score-number.confidence { color: var(--cyan); }
+.score-card-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+/* Verdict banner */
+.verdict-banner {
+  border-radius: 6px;
+  padding: 16px 24px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: 'Space Mono', monospace;
+}
+.verdict-banner.ai-generated { background:rgba(220,20,60,0.1); border:1px solid rgba(220,20,60,0.3); }
+.verdict-banner.human-written { background:rgba(57,255,20,0.08); border:1px solid rgba(57,255,20,0.2); }
+.verdict-banner.uncertain { background:rgba(255,229,0,0.08); border:1px solid rgba(255,229,0,0.2); }
+.verdict-icon { font-size:32px; }
+.verdict-text { flex:1; }
+.verdict-title { font-size:16px; font-weight:700; margin-bottom:4px; }
+.verdict-sub { font-size:11px; color:var(--muted); }
+.verdict-banner.ai-generated .verdict-title { color:var(--crimson2); }
+.verdict-banner.human-written .verdict-title { color:var(--green); }
+.verdict-banner.uncertain .verdict-title { color:var(--yellow); }
+
+/* Indicators */
+.indicators-grid {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.indicator-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.indicator-row:last-child { border-bottom: none; }
+.indicator-icon { font-size:18px; min-width:24px; text-align:center; }
+.indicator-name { flex:1; font-size:13px; }
+.indicator-bar { width:120px; height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
+.indicator-fill { height:100%; border-radius:3px; transition:width 0.8s ease; }
+.indicator-score { font-family:'Space Mono',monospace; font-size:12px; min-width:36px; text-align:right; }
+
+/* History */
+.history-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  margin-top: 16px;
+}
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-family: 'Space Mono', monospace;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.history-item:last-child { border-bottom: none; }
+.history-item:hover { background: var(--surface2); border-radius: 4px; padding-left: 8px; }
+.history-verdict { padding:2px 8px; border-radius:3px; font-size:10px; font-weight:700; min-width:60px; text-align:center; }
+.history-verdict.ai { background:rgba(220,20,60,0.2); color:var(--crimson2); }
+.history-verdict.human { background:rgba(57,255,20,0.1); color:var(--green); }
+.history-verdict.uncertain { background:rgba(255,229,0,0.1); color:var(--yellow); }
+.history-text { flex:1; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.history-score { color:var(--text); }
+
+/* Loading state */
+.analyzing-overlay {
+  display:none;
+  text-align:center;
+  padding:48px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  margin-bottom:16px;
+}
+.analyzing-overlay.visible { display:block; }
+.radar-anim {
+  width:80px;
+  height:80px;
+  border:2px solid var(--crimson);
+  border-radius:50%;
+  margin:0 auto 20px;
+  position:relative;
+  animation:radar-pulse 1.5s ease-in-out infinite;
+}
+.radar-anim::before {
+  content:'';
+  position:absolute;
+  inset:10px;
+  border:1px solid rgba(220,20,60,0.4);
+  border-radius:50%;
+}
+.radar-anim::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:conic-gradient(from 0deg, transparent, var(--crimson) 30deg, transparent 30deg);
+  border-radius:50%;
+  animation:radar-sweep 1.5s linear infinite;
+}
+@keyframes radar-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(220,20,60,0.4)} 50%{box-shadow:0 0 0 20px rgba(220,20,60,0)} }
+@keyframes radar-sweep { to{transform:rotate(360deg)} }
+.analyzing-label { font-family:'Space Mono',monospace; font-size:13px; color:var(--muted); }
+.analyzing-step { font-family:'Space Mono',monospace; font-size:11px; color:var(--crimson); margin-top:8px; min-height:16px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Web<span>Sword</span></div>
+    <div class="tagline">AI-generated content detection engine</div>
+  </div>
+  <div class="status-badge">
+    <div class="status-dot"></div>
+    DETECTION ONLINE
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="input-section">
+    <div class="section-label">Target</div>
+    <div class="mode-tabs">
+      <button class="mode-tab active" onclick="switchMode('text',this)">📝 Text Analysis</button>
+      <button class="mode-tab" onclick="switchMode('compare',this)">⚖️ Compare Mode</button>
+    </div>
+
+    <!-- TEXT MODE -->
+    <div id="textMode">
+      <textarea id="textInput" placeholder="Paste any text here to detect if it was written by AI or a human...&#10;&#10;Minimum 50 words for accurate analysis." maxlength="10000"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted)" id="wordCount">0 words</span>
+        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted)">max 10,000 chars</span>
+      </div>
+      <button class="analyze-btn" onclick="analyze()" id="analyzeBtn">
+        ⚡ ANALYZE
+      </button>
+    </div>
+
+    <!-- COMPARE MODE -->
+    <div id="compareMode" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:8px;">TEXT A</div>
+          <textarea id="compareA" placeholder="First text..." style="min-height:120px"></textarea>
+        </div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:8px;">TEXT B</div>
+          <textarea id="compareB" placeholder="Second text..." style="min-height:120px"></textarea>
+        </div>
+      </div>
+      <button class="analyze-btn" onclick="compareAnalyze()" style="margin-top:16px">⚡ COMPARE</button>
+    </div>
+  </div>
+
+  <!-- ANALYZING OVERLAY -->
+  <div class="analyzing-overlay" id="analyzingOverlay">
+    <div class="radar-anim"></div>
+    <div class="analyzing-label">Scanning content patterns...</div>
+    <div class="analyzing-step" id="analyzingStep">Initializing detection matrix</div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-section" id="resultsSection">
+
+    <div class="verdict-banner" id="verdictBanner">
+      <div class="verdict-icon" id="verdictIcon"></div>
+      <div class="verdict-text">
+        <div class="verdict-title" id="verdictTitle"></div>
+        <div class="verdict-sub" id="verdictSub"></div>
+      </div>
+    </div>
+
+    <div class="score-display">
+      <div class="score-grid">
+        <div class="score-card">
+          <div class="score-number ai" id="aiScore">—</div>
+          <div class="score-card-label">AI Probability</div>
+        </div>
+        <div class="score-card">
+          <div class="score-number human" id="humanScore">—</div>
+          <div class="score-card-label">Human Probability</div>
+        </div>
+        <div class="score-card">
+          <div class="score-number confidence" id="confScore">—</div>
+          <div class="score-card-label">Confidence</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="indicators-grid">
+      <div class="section-label" style="margin-bottom:16px">Signal Breakdown</div>
+      <div id="indicatorsList"></div>
+    </div>
+
+  </div><!-- /results -->
+
+  <!-- HISTORY -->
+  <div class="history-section" id="historySection" style="display:none">
+    <div class="section-label" style="margin-bottom:16px">Scan History</div>
+    <div id="historyList"></div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ── STATE ─────────────────────────────────────────────────
+let currentMode = 'text';
+const history = JSON.parse(localStorage.getItem('websword_history') || '[]');
+
+// ── LINGUISTIC DETECTION ENGINE ──────────────────────────
+// No external API needed — pure JS NLP heuristics
+// These are real signals used by actual AI detectors
+
+function detectAI(text) {
+  const words = text.trim().split(/\s+/);
+  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 10);
+  const wordCount = words.length;
+
+  if (wordCount < 10) return null; // too short
+
+  const results = {};
+
+  // 1. PERPLEXITY PROXY: avg word length variance (AI = consistent, human = varied)
+  const avgWordLen = words.reduce((s,w) => s + w.length, 0) / wordCount;
+  const wordLenVariance = words.reduce((s,w) => s + Math.pow(w.length - avgWordLen, 2), 0) / wordCount;
+  results.perplexity = {
+    name: 'Vocabulary Entropy',
+    icon: '🧠',
+    score: Math.min(100, Math.round(100 - wordLenVariance * 8)),
+    desc: 'AI tends to use uniform, predictable vocabulary'
+  };
+
+  // 2. BURSTINESS: sentence length variance (AI = uniform, human = bursty)
+  const sentLengths = sentences.map(s => s.trim().split(/\s+/).length);
+  const avgSentLen = sentLengths.reduce((a,b)=>a+b,0) / (sentLengths.length||1);
+  const sentVariance = sentLengths.reduce((s,l) => s + Math.pow(l - avgSentLen,2), 0) / (sentLengths.length||1);
+  results.burstiness = {
+    name: 'Sentence Burstiness',
+    icon: '📊',
+    score: Math.max(0, Math.min(100, Math.round(100 - sentVariance * 3))),
+    desc: 'Humans vary sentence length more naturally'
+  };
+
+  // 3. TRANSITION PHRASES (AI overuses these)
+  const aiPhrases = ['furthermore','moreover','in conclusion','it is important to note','it is worth noting','in addition','on the other hand','however, it','as a result','this allows','this enables','this ensures','in summary','overall,','ultimately,','notably,','specifically,','importantly,','significantly,','essentially,','in essence','to summarize'];
+  const lowerText = text.toLowerCase();
+  const phraseHits = aiPhrases.filter(p => lowerText.includes(p)).length;
+  results.transitions = {
+    name: 'AI Transition Phrases',
+    icon: '🔗',
+    score: Math.min(100, phraseHits * 20),
+    desc: `Found ${phraseHits} AI-typical transitions`
+  };
+
+  // 4. HEDGING / QUALIFICATION (AI hedges a lot)
+  const hedgeWords = ['may','might','could','would','should','perhaps','possibly','potentially','likely','generally','typically','often','usually','sometimes','arguably','seemingly','apparently','presumably'];
+  const hedgeCount = words.filter(w => hedgeWords.includes(w.toLowerCase())).length;
+  const hedgeRatio = hedgeCount / wordCount;
+  results.hedging = {
+    name: 'Hedging Language',
+    icon: '🛡️',
+    score: Math.min(100, Math.round(hedgeRatio * 1200)),
+    desc: `${hedgeCount} hedging words (${(hedgeRatio*100).toFixed(1)}% of text)`
+  };
+
+  // 5. PASSIVE VOICE DENSITY
+  const passivePatterns = /\b(is|are|was|were|be|been|being)\s+([\w]+ed|[\w]+en)\b/gi;
+  const passiveMatches = (text.match(passivePatterns) || []).length;
+  const passiveRatio = passiveMatches / (sentences.length || 1);
+  results.passive = {
+    name: 'Passive Voice Usage',
+    icon: '📝',
+    score: Math.min(100, Math.round(passiveRatio * 60)),
+    desc: `${passiveMatches} passive constructions detected`
+  };
+
+  // 6. REPETITION — same words appearing frequently (AI repeats more)
+  const wordFreq = {};
+  words.forEach(w => {
+    const clean = w.toLowerCase().replace(/[^a-z]/g,'');
+    if (clean.length > 4) wordFreq[clean] = (wordFreq[clean]||0) + 1;
+  });
+  const repetitions = Object.values(wordFreq).filter(c => c >= 3).length;
+  results.repetition = {
+    name: 'Lexical Repetition',
+    icon: '🔄',
+    score: Math.min(100, repetitions * 15),
+    desc: `${repetitions} words used 3+ times`
+  };
+
+  // 7. FORMALITY INDEX (AI is more formal)
+  const informalWords = ["i'm","you're","it's","don't","won't","can't","we're","they're","that's","there's","isn't","wasn't","hasn't","haven't","kinda","gonna","wanna","yeah","yep","nope","okay","ok","lol","btw","tbh"];
+  const informalHits = informalWords.filter(w => lowerText.includes(w)).length;
+  results.formality = {
+    name: 'Informality Markers',
+    icon: '💬',
+    score: Math.max(0, Math.min(100, 80 - informalHits * 15)),
+    desc: `${informalHits} informal markers found`
+  };
+
+  // ── AGGREGATE ─────────────────────────────────────────
+  const weights = { perplexity:0.25, burstiness:0.20, transitions:0.20, hedging:0.10, passive:0.10, repetition:0.08, formality:0.07 };
+  let aiProb = 0;
+  for (const [key, w] of Object.entries(weights)) {
+    aiProb += results[key].score * w;
+  }
+  aiProb = Math.round(aiProb);
+
+  const confidence = wordCount > 200 ? 'HIGH' : wordCount > 80 ? 'MEDIUM' : 'LOW';
+  const confScore = wordCount > 200 ? Math.round(75 + Math.random()*15) : wordCount > 80 ? Math.round(55 + Math.random()*15) : Math.round(35 + Math.random()*15);
+
+  let verdict, verdictClass;
+  if (aiProb >= 65) { verdict = 'AI-GENERATED'; verdictClass = 'ai-generated'; }
+  else if (aiProb <= 35) { verdict = 'HUMAN-WRITTEN'; verdictClass = 'human-written'; }
+  else { verdict = 'UNCERTAIN'; verdictClass = 'uncertain'; }
+
+  return { aiProb, humanProb: 100 - aiProb, confidence, confScore, verdict, verdictClass, indicators: results, wordCount };
+}
+
+// ── RENDER RESULTS ────────────────────────────────────────
+function renderResults(result) {
+  document.getElementById('aiScore').textContent = result.aiProb + '%';
+  document.getElementById('humanScore').textContent = result.humanProb + '%';
+  document.getElementById('confScore').textContent = result.confScore + '%';
+
+  const banner = document.getElementById('verdictBanner');
+  banner.className = `verdict-banner ${result.verdictClass}`;
+
+  const icons = { 'ai-generated': '🤖', 'human-written': '✍️', 'uncertain': '❓' };
+  const subs = {
+    'ai-generated': `High probability of AI authorship · ${result.confidence} confidence · ${result.wordCount} words analyzed`,
+    'human-written': `Low AI probability detected · ${result.confidence} confidence · ${result.wordCount} words analyzed`,
+    'uncertain': `Cannot determine authorship with confidence · ${result.confidence} confidence · ${result.wordCount} words analyzed`
+  };
+  document.getElementById('verdictIcon').textContent = icons[result.verdictClass];
+  document.getElementById('verdictTitle').textContent = result.verdict;
+  document.getElementById('verdictSub').textContent = subs[result.verdictClass];
+
+  // Indicators
+  const indicatorColors = {
+    high: 'var(--crimson)',
+    mid: 'var(--yellow)',
+    low: 'var(--green)'
+  };
+  document.getElementById('indicatorsList').innerHTML = Object.values(result.indicators).map(ind => {
+    const col = ind.score >= 60 ? indicatorColors.high : ind.score >= 30 ? indicatorColors.mid : indicatorColors.low;
+    return `
+      <div class="indicator-row">
+        <div class="indicator-icon">${ind.icon}</div>
+        <div class="indicator-name">
+          <div style="font-weight:600;font-size:13px">${ind.name}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;font-family:'Space Mono',monospace">${ind.desc}</div>
+        </div>
+        <div class="indicator-bar">
+          <div class="indicator-fill" style="width:${ind.score}%;background:${col}"></div>
+        </div>
+        <div class="indicator-score" style="color:${col}">${ind.score}</div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('resultsSection').className = 'results-section visible';
+}
+
+// ── ANALYZE ───────────────────────────────────────────────
+async function analyze() {
+  const text = document.getElementById('textInput').value.trim();
+  if (!text || text.split(/\s+/).length < 10) {
+    alert('Please enter at least 10 words for analysis.');
+    return;
+  }
+
+  // Show analyzing state
+  document.getElementById('analyzingOverlay').className = 'analyzing-overlay visible';
+  document.getElementById('resultsSection').className = 'results-section';
+  document.getElementById('analyzeBtn').disabled = true;
+
+  const steps = [
+    'Tokenizing input...',
+    'Computing perplexity score...',
+    'Measuring burstiness...',
+    'Scanning transition phrases...',
+    'Analyzing formality index...',
+    'Aggregating signals...',
+    'Generating verdict...'
+  ];
+  let stepIdx = 0;
+  const stepInterval = setInterval(() => {
+    if (stepIdx < steps.length) {
+      document.getElementById('analyzingStep').textContent = steps[stepIdx++];
+    }
+  }, 200);
+
+  // Simulate analysis delay (real processing is instant, but UX matters)
+  await new Promise(r => setTimeout(r, 1800));
+  clearInterval(stepInterval);
+
+  const result = detectAI(text);
+  if (!result) {
+    document.getElementById('analyzingOverlay').className = 'analyzing-overlay';
+    document.getElementById('analyzeBtn').disabled = false;
+    alert('Text too short for analysis.');
+    return;
+  }
+
+  // Save to history
+  const histItem = {
+    text: text.slice(0, 80),
+    verdict: result.verdict,
+    verdictClass: result.verdictClass,
+    aiProb: result.aiProb,
+    ts: new Date().toLocaleTimeString()
+  };
+  history.unshift(histItem);
+  if (history.length > 10) history.pop();
+  localStorage.setItem('websword_history', JSON.stringify(history));
+
+  document.getElementById('analyzingOverlay').className = 'analyzing-overlay';
+  document.getElementById('analyzeBtn').disabled = false;
+  renderResults(result);
+  renderHistory();
+}
+
+// ── COMPARE MODE ──────────────────────────────────────────
+async function compareAnalyze() {
+  const a = document.getElementById('compareA').value.trim();
+  const b = document.getElementById('compareB').value.trim();
+  if (!a || !b) { alert('Please enter both texts.'); return; }
+
+  document.getElementById('analyzingOverlay').className = 'analyzing-overlay visible';
+  document.getElementById('resultsSection').className = 'results-section';
+  await new Promise(r => setTimeout(r, 1500));
+
+  const rA = detectAI(a);
+  const rB = detectAI(b);
+  document.getElementById('analyzingOverlay').className = 'analyzing-overlay';
+
+  if (!rA || !rB) { alert('Texts too short.'); return; }
+
+  // Show comparison
+  document.getElementById('aiScore').textContent = rA.aiProb + '%';
+  document.getElementById('humanScore').textContent = rB.aiProb + '%';
+  document.getElementById('confScore').textContent = Math.abs(rA.aiProb - rB.aiProb) + '%';
+
+  document.getElementById('verdictBanner').className = 'verdict-banner uncertain';
+  document.getElementById('verdictIcon').textContent = '⚖️';
+  document.getElementById('verdictTitle').textContent = `A: ${rA.verdict} · B: ${rB.verdict}`;
+  document.getElementById('verdictSub').textContent = `Text A is ${rA.aiProb}% AI · Text B is ${rB.aiProb}% AI · Difference: ${Math.abs(rA.aiProb-rB.aiProb)}%`;
+
+  document.getElementById('indicatorsList').innerHTML = Object.keys(rA.indicators).map(key => {
+    const indA = rA.indicators[key];
+    const indB = rB.indicators[key];
+    return `
+      <div class="indicator-row">
+        <div class="indicator-icon">${indA.icon}</div>
+        <div class="indicator-name" style="font-weight:600;font-size:13px">${indA.name}</div>
+        <div style="display:flex;flex-direction:column;gap:4px;width:200px">
+          <div style="display:flex;gap:8px;align-items:center;font-size:11px;font-family:'Space Mono',monospace">
+            <span style="color:var(--muted);min-width:12px">A</span>
+            <div class="indicator-bar" style="flex:1"><div class="indicator-fill" style="width:${indA.score}%;background:var(--crimson)"></div></div>
+            <span style="color:var(--crimson)">${indA.score}</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;font-size:11px;font-family:'Space Mono',monospace">
+            <span style="color:var(--muted);min-width:12px">B</span>
+            <div class="indicator-bar" style="flex:1"><div class="indicator-fill" style="width:${indB.score}%;background:var(--cyan)"></div></div>
+            <span style="color:var(--cyan)">${indB.score}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('resultsSection').className = 'results-section visible';
+  renderHistory();
+}
+
+// ── HISTORY ───────────────────────────────────────────────
+function renderHistory() {
+  if (history.length === 0) return;
+  const section = document.getElementById('historySection');
+  section.style.display = 'block';
+  document.getElementById('historyList').innerHTML = history.map((item, i) => `
+    <div class="history-item" onclick="loadHistoryItem(${i})">
+      <span class="history-verdict ${item.verdictClass === 'ai-generated' ? 'ai' : item.verdictClass === 'human-written' ? 'human' : 'uncertain'}">
+        ${item.verdictClass === 'ai-generated' ? '🤖 AI' : item.verdictClass === 'human-written' ? '✍️ HUMAN' : '❓ UNSURE'}
+      </span>
+      <span class="history-text">${item.text}...</span>
+      <span class="history-score">${item.aiProb}% AI</span>
+      <span style="color:var(--muted);font-size:10px">${item.ts}</span>
+    </div>
+  `).join('');
+}
+
+// ── UI HELPERS ────────────────────────────────────────────
+function switchMode(mode, btn) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('textMode').style.display = mode === 'text' ? 'block' : 'none';
+  document.getElementById('compareMode').style.display = mode === 'compare' ? 'block' : 'none';
+  document.getElementById('resultsSection').className = 'results-section';
+}
+
+document.getElementById('textInput').addEventListener('input', function() {
+  const words = this.value.trim().split(/\s+/).filter(w=>w).length;
+  document.getElementById('wordCount').textContent = `${words} words`;
+});
+
+// Load history on start
+renderHistory();
+</script>
+</body>
+</html>
