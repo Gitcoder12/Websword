@@ -8,10 +8,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ══════════════════════════════════════════════════════════
-   THEME SYSTEM — dark (default) + light toggle
-   Colors (crimson/cyan/green/yellow) stay identical in both
-   ══════════════════════════════════════════════════════════ */
 :root,
 [data-theme="dark"] {
   --bg:        #070709;
@@ -19,54 +15,42 @@
   --surface2:  #1a1a24;
   --border:    #33334a;
   --border2:   #45455e;
-
   --text:      #f5f5ff;
   --text2:     #c4c4d4;
   --muted:     #9494a8;
   --muted2:    #6a6a80;
-
   --crimson:   #dc143c;
   --crimson2:  #ff2d55;
   --cyan:      #00f5ff;
   --green:     #39ff14;
   --yellow:    #ffe500;
-
   --scanline:  rgba(0,0,0,0.15);
-  --shadow:    0 4px 20px rgba(0,0,0,0.4);
   --shadow-lg: 0 12px 32px rgba(0,0,0,0.6);
 }
-
 [data-theme="light"] {
   --bg:        #f4f4f8;
   --surface:   #ffffff;
   --surface2:  #f8f8fc;
   --border:    #d4d4e0;
   --border2:   #b8b8cc;
-
   --text:      #1a1a24;
   --text2:     #3a3a4a;
   --muted:     #6a6a80;
   --muted2:    #9494a8;
-
   --crimson:   #c8102e;
   --crimson2:  #e01e3f;
   --cyan:      #0099aa;
   --green:     #1a9c1a;
   --yellow:    #b58a00;
-
   --scanline:  transparent;
-  --shadow:    0 2px 12px rgba(0,0,0,0.08);
   --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
 }
-
 :root {
   --sans:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --mono:    'IBM Plex Mono', ui-monospace, monospace;
   --display: 'Anton', 'Inter', sans-serif;
 }
-
 * { margin:0; padding:0; box-sizing:border-box; }
-
 body {
   background: var(--bg);
   color: var(--text);
@@ -77,26 +61,16 @@ body {
   transition: background-color 0.25s ease, color 0.25s ease;
   -webkit-font-smoothing: antialiased;
 }
-
-/* scanline overlay (dark only — disabled in light) */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    var(--scanline) 2px,
-    var(--scanline) 4px
-  );
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, var(--scanline) 2px, var(--scanline) 4px);
   pointer-events: none;
   z-index: 1000;
 }
 
-/* ══════════════════════════════════════════════════════════
-   HEADER
-   ══════════════════════════════════════════════════════════ */
+/* HEADER */
 header {
   background: var(--surface);
   border-bottom: 1px solid var(--crimson);
@@ -147,7 +121,6 @@ header {
   animation: blink 2s ease-in-out infinite;
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
 .theme-toggle {
   width: 40px;
   height: 40px;
@@ -164,21 +137,11 @@ header {
   padding: 0;
   line-height: 1;
 }
-.theme-toggle:hover {
-  border-color: var(--crimson);
-  transform: scale(1.05);
-}
+.theme-toggle:hover { border-color: var(--crimson); transform: scale(1.05); }
 .theme-toggle:active { transform: scale(0.95); }
 
-/* ══════════════════════════════════════════════════════════
-   CONTAINER
-   ══════════════════════════════════════════════════════════ */
-.container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 48px 28px;
-}
-
+/* CONTAINER */
+.container { max-width: 1100px; margin: 0 auto; padding: 48px 28px; }
 .input-section {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -200,7 +163,6 @@ header {
   font-weight: 600;
 }
 .section-label::before { content: '//'; color: var(--muted); }
-
 .mode-tabs {
   display: flex;
   gap: 4px;
@@ -223,11 +185,7 @@ header {
   border-radius: 5px;
   transition: all 0.2s;
 }
-.mode-tab.active {
-  background: var(--crimson);
-  color: white;
-}
-
+.mode-tab.active { background: var(--crimson); color: white; }
 textarea {
   width: 100%;
   min-height: 200px;
@@ -245,6 +203,24 @@ textarea {
 }
 textarea:focus { border-color: var(--crimson); }
 textarea::placeholder { color: var(--muted2); }
+
+.sample-btn {
+  padding: 6px 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.03em;
+}
+.sample-btn:hover {
+  border-color: var(--crimson);
+  color: var(--crimson);
+  background: rgba(220,20,60,0.05);
+}
 
 .analyze-btn {
   margin-top: 18px;
@@ -269,16 +245,9 @@ textarea::placeholder { color: var(--muted2); }
   transform: translateY(-1px);
   box-shadow: 0 4px 20px rgba(220,20,60,0.4);
 }
-.analyze-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
+.analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
-/* ══════════════════════════════════════════════════════════
-   RESULTS
-   ══════════════════════════════════════════════════════════ */
+/* RESULTS */
 .results-section { display: none; }
 .results-section.visible { display: block; }
 
@@ -306,7 +275,6 @@ textarea::placeholder { color: var(--muted2); }
   position: relative;
 }
 @media (max-width: 640px) { .score-grid { grid-template-columns: 1fr; } }
-
 .score-card {
   background: var(--bg);
   border: 1px solid var(--border);
@@ -334,7 +302,6 @@ textarea::placeholder { color: var(--muted2); }
   font-weight: 500;
 }
 
-/* Verdict banner */
 .verdict-banner {
   border-radius: 8px;
   padding: 20px 28px;
@@ -344,18 +311,9 @@ textarea::placeholder { color: var(--muted2); }
   gap: 20px;
   font-family: var(--mono);
 }
-.verdict-banner.ai-generated {
-  background: rgba(220,20,60,0.1);
-  border: 1px solid rgba(220,20,60,0.35);
-}
-.verdict-banner.human-written {
-  background: rgba(57,255,20,0.08);
-  border: 1px solid rgba(57,255,20,0.25);
-}
-.verdict-banner.uncertain {
-  background: rgba(255,229,0,0.08);
-  border: 1px solid rgba(255,229,0,0.25);
-}
+.verdict-banner.ai-generated { background: rgba(220,20,60,0.1); border: 1px solid rgba(220,20,60,0.35); }
+.verdict-banner.human-written { background: rgba(57,255,20,0.08); border: 1px solid rgba(57,255,20,0.25); }
+.verdict-banner.uncertain { background: rgba(255,229,0,0.08); border: 1px solid rgba(255,229,0,0.25); }
 .verdict-icon { font-size: 36px; }
 .verdict-text { flex: 1; }
 .verdict-title {
@@ -371,7 +329,6 @@ textarea::placeholder { color: var(--muted2); }
 .verdict-banner.human-written .verdict-title { color: var(--green); }
 .verdict-banner.uncertain .verdict-title { color: var(--yellow); }
 
-/* Indicators */
 .indicators-grid {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -388,11 +345,7 @@ textarea::placeholder { color: var(--muted2); }
   border-bottom: 1px solid var(--border);
 }
 .indicator-row:last-child { border-bottom: none; }
-.indicator-icon {
-  font-size: 20px;
-  min-width: 28px;
-  text-align: center;
-}
+.indicator-icon { font-size: 20px; min-width: 28px; text-align: center; }
 .indicator-name { flex: 1; font-size: 14px; }
 .indicator-bar {
   width: 140px;
@@ -401,11 +354,7 @@ textarea::placeholder { color: var(--muted2); }
   border-radius: 4px;
   overflow: hidden;
 }
-.indicator-fill {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.8s ease;
-}
+.indicator-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
 .indicator-score {
   font-family: var(--mono);
   font-size: 13px;
@@ -414,7 +363,42 @@ textarea::placeholder { color: var(--muted2); }
   font-weight: 500;
 }
 
-/* History */
+.highlight-preview {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text2);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.highlight-preview mark {
+  background: rgba(220,20,60,0.15);
+  color: var(--crimson);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--crimson);
+}
+
+.copy-btn {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.copy-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+
 .history-section {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -435,12 +419,7 @@ textarea::placeholder { color: var(--muted2); }
   transition: background 0.15s;
 }
 .history-item:last-child { border-bottom: none; }
-.history-item:hover {
-  background: var(--surface2);
-  border-radius: 6px;
-  padding-left: 12px;
-  padding-right: 12px;
-}
+.history-item:hover { background: var(--surface2); border-radius: 6px; padding-left: 12px; padding-right: 12px; }
 .history-verdict {
   padding: 3px 10px;
   border-radius: 4px;
@@ -450,28 +429,12 @@ textarea::placeholder { color: var(--muted2); }
   text-align: center;
   letter-spacing: 0.05em;
 }
-.history-verdict.ai {
-  background: rgba(220,20,60,0.2);
-  color: var(--crimson2);
-}
-.history-verdict.human {
-  background: rgba(57,255,20,0.12);
-  color: var(--green);
-}
-.history-verdict.uncertain {
-  background: rgba(255,229,0,0.12);
-  color: var(--yellow);
-}
-.history-text {
-  flex: 1;
-  color: var(--muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+.history-verdict.ai { background: rgba(220,20,60,0.2); color: var(--crimson2); }
+.history-verdict.human { background: rgba(57,255,20,0.12); color: var(--green); }
+.history-verdict.uncertain { background: rgba(255,229,0,0.12); color: var(--yellow); }
+.history-text { flex: 1; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .history-score { color: var(--text); font-weight: 500; }
 
-/* Loading */
 .analyzing-overlay {
   display: none;
   text-align: center;
@@ -506,25 +469,11 @@ textarea::placeholder { color: var(--muted2); }
   border-radius: 50%;
   animation: radar-sweep 1.5s linear infinite;
 }
-@keyframes radar-pulse {
-  0%,100% { box-shadow: 0 0 0 0 rgba(220,20,60,0.4); }
-  50%     { box-shadow: 0 0 0 24px rgba(220,20,60,0); }
-}
+@keyframes radar-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(220,20,60,0.4); } 50% { box-shadow: 0 0 0 24px rgba(220,20,60,0); } }
 @keyframes radar-sweep { to { transform: rotate(360deg); } }
-.analyzing-label {
-  font-family: var(--mono);
-  font-size: 14px;
-  color: var(--muted);
-}
-.analyzing-step {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--crimson);
-  margin-top: 10px;
-  min-height: 18px;
-}
+.analyzing-label { font-family: var(--mono); font-size: 14px; color: var(--muted); }
+.analyzing-step { font-family: var(--mono); font-size: 12px; color: var(--crimson); margin-top: 10px; min-height: 18px; }
 
-/* Toast */
 .toast {
   position: fixed;
   bottom: 24px;
@@ -546,7 +495,6 @@ textarea::placeholder { color: var(--muted2); }
 }
 .toast.show { transform: translateY(0); opacity: 1; }
 
-/* Warning box for short text */
 .short-warn {
   background: rgba(255,229,0,0.08);
   border: 1px solid rgba(255,229,0,0.25);
@@ -600,8 +548,14 @@ textarea::placeholder { color: var(--muted2); }
     <div id="textMode">
       <textarea id="textInput" placeholder="Paste any text here to detect if it was written by AI or a human...&#10;&#10;Best results with 50+ words. Short text works but shows a reliability warning." maxlength="10000"></textarea>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
-        <span style="font-family:var(--mono);font-size:12px;color:var(--muted)" id="wordCount">0 words</span>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--muted)" id="wordCount">0 words · 0 chars</span>
         <span style="font-family:var(--mono);font-size:12px;color:var(--muted)">max 10,000 chars</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center;">
+        <span style="font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;">Try a sample:</span>
+        <button class="sample-btn" onclick="loadSample('ai')">AI-written</button>
+        <button class="sample-btn" onclick="loadSample('human')">Human-written</button>
+        <button class="sample-btn" onclick="loadSample('mixed')">Mixed</button>
       </div>
       <button class="analyze-btn" onclick="analyze()" id="analyzeBtn">Analyze</button>
     </div>
@@ -657,6 +611,18 @@ textarea::placeholder { color: var(--muted2); }
       <div class="section-label" style="margin-bottom:18px">Signal Breakdown</div>
       <div id="indicatorsList"></div>
     </div>
+
+    <div class="indicators-grid" id="highlightSection" style="display:none">
+      <div class="section-label" style="margin-bottom:18px">AI-typical Phrases Detected</div>
+      <div class="highlight-preview" id="highlightPreview"></div>
+      <div style="margin-top:14px;font-family:var(--mono);font-size:11px;color:var(--muted);">
+        Highlighted phrases are commonly overused by language models. Not proof of AI authorship on their own — combined with other signals.
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:16px;">
+      <button class="copy-btn" onclick="copyResult(_lastResult)">Copy Result</button>
+    </div>
   </div>
 
   <div class="history-section" id="historySection" style="display:none">
@@ -669,9 +635,7 @@ textarea::placeholder { color: var(--muted2); }
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════════════════
-//  THEME
-// ══════════════════════════════════════════════════════════
+// ── THEME ──
 function initTheme() {
   const saved = localStorage.getItem('websword_theme') || 'dark';
   document.body.dataset.theme = saved;
@@ -689,17 +653,12 @@ function updateThemeIcon(theme) {
   if (btn) btn.textContent = theme === 'dark' ? '☀' : '☾';
 }
 
-// ══════════════════════════════════════════════════════════
-//  HELPERS
-// ══════════════════════════════════════════════════════════
+// ── HELPERS ──
 function esc(s) {
   if (s === undefined || s === null) return '';
   return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 let _toastTimer;
 function toast(msg) {
@@ -710,82 +669,132 @@ function toast(msg) {
   _toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-// ══════════════════════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════════════════════
+// ── SAMPLES ──
+const SAMPLES = {
+  ai: `Artificial intelligence represents a transformative paradigm shift in modern society. Furthermore, it is important to note that machine learning algorithms have demonstrated remarkable capabilities across diverse domains. Moreover, the integration of these technologies into everyday applications continues to accelerate. It is worth noting that this progression necessitates careful consideration of ethical implications. In conclusion, the future of AI holds significant potential for innovation and societal advancement.`,
+  human: `So I tried this thing last night and honestly it was a mess. Set it up, ran it, and it just... didn't work. Spent two hours debugging before I realized I'd forgotten to install the dependencies. Classic. Anyway, once it ran, the results were actually kind of cool — way faster than the old version. Would recommend, just read the docs first lol.`,
+  mixed: `The system processes input data efficiently. However, users have reported that it frequently crashes when handling large files — which is annoying as hell. The developers say they're working on a fix, but no timeline has been given. In addition, documentation remains sparse and confusing.`,
+};
+function loadSample(kind) {
+  const text = SAMPLES[kind];
+  if (!text) return;
+  const ta = document.getElementById('textInput');
+  ta.value = text;
+  ta.dispatchEvent(new Event('input'));
+  toast(`Loaded ${kind} sample`);
+}
+
+// ── HIGHLIGHT AI PHRASES ──
+const AI_HIGHLIGHT_PHRASES = [
+  'furthermore', 'moreover', 'in conclusion', 'it is important to note',
+  'it is worth noting', 'in addition', 'on the other hand',
+  'as a result', 'this allows', 'this enables', 'this ensures',
+  'in summary', 'overall', 'ultimately', 'notably', 'specifically',
+  'importantly', 'significantly', 'essentially', 'in essence', 'to summarize'
+];
+function highlightAI(text) {
+  let html = esc(text);
+  const sorted = [...AI_HIGHLIGHT_PHRASES].sort((a, b) => b.length - a.length);
+  for (const phrase of sorted) {
+    const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`\\b(${escaped})\\b`, 'gi');
+    html = html.replace(re, '<mark>$1</mark>');
+  }
+  return html;
+}
+
+// ── COPY RESULT ──
+let _lastResult = null;
+function copyResult(result) {
+  if (!result) { toast('Nothing to copy'); return; }
+  const lines = [
+    `WebSword Analysis`,
+    `─────────────────`,
+    `Verdict: ${result.verdict}`,
+    `AI Probability: ${result.aiProb}%`,
+    `Human Probability: ${result.humanProb}%`,
+    `Confidence: ${result.confScore}% (${result.confidence})`,
+    `Words analyzed: ${result.wordCount}`,
+    ``,
+    `Signal Breakdown:`,
+    ...Object.values(result.indicators).map(ind => `  ${ind.name}: ${ind.score} — ${ind.desc}`)
+  ];
+  const text = lines.join('\n');
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => toast('Result copied')).catch(() => toast('Copy failed'));
+    return;
+  }
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); toast('Result copied'); }
+  catch { toast('Copy failed'); }
+  document.body.removeChild(ta);
+}
+
+// ── STATE ──
 let currentMode = 'text';
 let history = [];
 try { history = JSON.parse(localStorage.getItem('websword_history') || '[]'); }
 catch { history = []; }
 if (!Array.isArray(history)) history = [];
 
-// ══════════════════════════════════════════════════════════
-//  DETECTION ENGINE
-// ══════════════════════════════════════════════════════════
+// ── DETECTION ENGINE ──
 function detectAI(text) {
   const words = text.trim().split(/\s+/).filter(Boolean);
   const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 2);
   const wordCount = words.length;
-
   if (wordCount < 1) return null;
 
   const results = {};
 
-  // 1. Vocabulary variance
   const avgWordLen = words.reduce((s, w) => s + w.length, 0) / wordCount;
   const wordLenVariance = words.reduce((s, w) => s + Math.pow(w.length - avgWordLen, 2), 0) / wordCount;
   results.perplexity = {
-    name: 'Vocabulary Entropy',
-    icon: '◆',
+    name: 'Vocabulary Entropy', icon: '◆',
     score: Math.min(100, Math.round(100 - wordLenVariance * 8)),
     desc: 'AI tends to use uniform, predictable vocabulary'
   };
 
-  // 2. Sentence burstiness
   const sentLengths = sentences.map(s => s.trim().split(/\s+/).length);
   const avgSentLen = sentLengths.reduce((a, b) => a + b, 0) / (sentLengths.length || 1);
   const sentVariance = sentLengths.reduce((s, l) => s + Math.pow(l - avgSentLen, 2), 0) / (sentLengths.length || 1);
   results.burstiness = {
-    name: 'Sentence Burstiness',
-    icon: '▤',
+    name: 'Sentence Burstiness', icon: '▤',
     score: Math.max(0, Math.min(100, Math.round(100 - sentVariance * 3))),
     desc: 'Humans vary sentence length more naturally'
   };
 
-  // 3. AI transition phrases
   const aiPhrases = ['furthermore', 'moreover', 'in conclusion', 'it is important to note', 'it is worth noting', 'in addition', 'on the other hand', 'however, it', 'as a result', 'this allows', 'this enables', 'this ensures', 'in summary', 'overall,', 'ultimately,', 'notably,', 'specifically,', 'importantly,', 'significantly,', 'essentially,', 'in essence', 'to summarize'];
   const lowerText = text.toLowerCase();
   const phraseHits = aiPhrases.filter(p => lowerText.includes(p)).length;
   results.transitions = {
-    name: 'AI Transition Phrases',
-    icon: '⇄',
+    name: 'AI Transition Phrases', icon: '⇄',
     score: Math.min(100, phraseHits * 20),
     desc: `Found ${phraseHits} AI-typical transitions`
   };
 
-  // 4. Hedging language
   const hedgeWords = ['may', 'might', 'could', 'would', 'should', 'perhaps', 'possibly', 'potentially', 'likely', 'generally', 'typically', 'often', 'usually', 'sometimes', 'arguably', 'seemingly', 'apparently', 'presumably'];
   const hedgeCount = words.filter(w => hedgeWords.includes(w.toLowerCase())).length;
   const hedgeRatio = hedgeCount / wordCount;
   results.hedging = {
-    name: 'Hedging Language',
-    icon: '◇',
+    name: 'Hedging Language', icon: '◇',
     score: Math.min(100, Math.round(hedgeRatio * 1200)),
     desc: `${hedgeCount} hedging words (${(hedgeRatio * 100).toFixed(1)}% of text)`
   };
 
-  // 5. Passive voice
   const passivePatterns = /\b(is|are|was|were|be|been|being)\s+([\w]+ed|[\w]+en)\b/gi;
   const passiveMatches = (text.match(passivePatterns) || []).length;
   const passiveRatio = passiveMatches / (sentences.length || 1);
   results.passive = {
-    name: 'Passive Voice Usage',
-    icon: '▷',
+    name: 'Passive Voice Usage', icon: '▷',
     score: Math.min(100, Math.round(passiveRatio * 60)),
     desc: `${passiveMatches} passive constructions detected`
   };
 
-  // 6. Lexical repetition
   const wordFreq = {};
   words.forEach(w => {
     const clean = w.toLowerCase().replace(/[^a-z]/g, '');
@@ -793,31 +802,24 @@ function detectAI(text) {
   });
   const repetitions = Object.values(wordFreq).filter(c => c >= 3).length;
   results.repetition = {
-    name: 'Lexical Repetition',
-    icon: '↻',
+    name: 'Lexical Repetition', icon: '↻',
     score: Math.min(100, repetitions * 15),
     desc: `${repetitions} words used 3+ times`
   };
 
-  // 7. Informality markers
   const informalWords = ["i'm", "you're", "it's", "don't", "won't", "can't", "we're", "they're", "that's", "there's", "isn't", "wasn't", "hasn't", "haven't", "kinda", "gonna", "wanna", "yeah", "yep", "nope", "okay", "ok", "lol", "btw", "tbh"];
   const informalHits = informalWords.filter(w => lowerText.includes(w)).length;
   results.formality = {
-    name: 'Informality Markers',
-    icon: '◦',
+    name: 'Informality Markers', icon: '◦',
     score: Math.max(0, Math.min(100, 80 - informalHits * 15)),
     desc: `${informalHits} informal markers found`
   };
 
-  // Aggregate
   const weights = { perplexity: 0.25, burstiness: 0.20, transitions: 0.20, hedging: 0.10, passive: 0.10, repetition: 0.08, formality: 0.07 };
   let aiProb = 0;
-  for (const [key, w] of Object.entries(weights)) {
-    aiProb += results[key].score * w;
-  }
+  for (const [key, w] of Object.entries(weights)) aiProb += results[key].score * w;
   aiProb = Math.round(aiProb);
 
-  // Honest confidence based on length
   let confidence, confScore;
   if (wordCount > 200)      { confidence = 'HIGH';     confScore = Math.round(75 + Math.random() * 15); }
   else if (wordCount > 80)  { confidence = 'MEDIUM';   confScore = Math.round(55 + Math.random() * 15); }
@@ -832,9 +834,7 @@ function detectAI(text) {
   return { aiProb, humanProb: 100 - aiProb, confidence, confScore, verdict, verdictClass, indicators: results, wordCount };
 }
 
-// ══════════════════════════════════════════════════════════
-//  RENDER
-// ══════════════════════════════════════════════════════════
+// ── RENDER ──
 function renderResults(result) {
   document.getElementById('aiScore').textContent = result.aiProb + '%';
   document.getElementById('humanScore').textContent = result.humanProb + '%';
@@ -872,12 +872,21 @@ function renderResults(result) {
   }).join('');
 
   document.getElementById('resultsSection').className = 'results-section visible';
+  _lastResult = result;
 
-  // Clear previous warning
+  const userText = document.getElementById('textInput').value;
+  const previewEl = document.getElementById('highlightSection');
+  const previewBody = document.getElementById('highlightPreview');
+  const hasHits = AI_HIGHLIGHT_PHRASES.some(p => userText.toLowerCase().includes(p.toLowerCase()));
+  if (hasHits && currentMode === 'text') {
+    previewEl.style.display = 'block';
+    previewBody.innerHTML = highlightAI(userText);
+  } else {
+    previewEl.style.display = 'none';
+  }
+
   const rs = document.getElementById('resultsSection');
   rs.querySelectorAll('.short-warn').forEach(el => el.remove());
-
-  // Add warning for short text
   if (result.wordCount < 20) {
     const warn = document.createElement('div');
     warn.className = 'short-warn';
@@ -886,9 +895,7 @@ function renderResults(result) {
   }
 }
 
-// ══════════════════════════════════════════════════════════
-//  ANALYZE
-// ══════════════════════════════════════════════════════════
+// ── ANALYZE ──
 async function analyze() {
   const text = document.getElementById('textInput').value.trim();
   if (!text || text.split(/\s+/).filter(Boolean).length < 1) {
@@ -900,20 +907,10 @@ async function analyze() {
   document.getElementById('resultsSection').className = 'results-section';
   document.getElementById('analyzeBtn').disabled = true;
 
-  const steps = [
-    'Tokenizing input...',
-    'Computing perplexity score...',
-    'Measuring burstiness...',
-    'Scanning transition phrases...',
-    'Analyzing formality index...',
-    'Aggregating signals...',
-    'Generating verdict...'
-  ];
+  const steps = ['Tokenizing input...', 'Computing perplexity score...', 'Measuring burstiness...', 'Scanning transition phrases...', 'Analyzing formality index...', 'Aggregating signals...', 'Generating verdict...'];
   let stepIdx = 0;
   const stepInterval = setInterval(() => {
-    if (stepIdx < steps.length) {
-      document.getElementById('analyzingStep').textContent = steps[stepIdx++];
-    }
+    if (stepIdx < steps.length) document.getElementById('analyzingStep').textContent = steps[stepIdx++];
   }, 200);
 
   await new Promise(r => setTimeout(r, 1800));
@@ -943,9 +940,7 @@ async function analyze() {
   renderHistory();
 }
 
-// ══════════════════════════════════════════════════════════
-//  COMPARE
-// ══════════════════════════════════════════════════════════
+// ── COMPARE ──
 async function compareAnalyze() {
   const a = document.getElementById('compareA').value.trim();
   const b = document.getElementById('compareB').value.trim();
@@ -958,7 +953,6 @@ async function compareAnalyze() {
   const rA = detectAI(a);
   const rB = detectAI(b);
   document.getElementById('analyzingOverlay').className = 'analyzing-overlay';
-
   if (!rA || !rB) { toast('Both fields need text.'); return; }
 
   document.getElementById('aiScore').textContent = rA.aiProb + '%';
@@ -969,6 +963,7 @@ async function compareAnalyze() {
   document.getElementById('verdictIcon').textContent = '⚖';
   document.getElementById('verdictTitle').textContent = `A: ${rA.verdict} · B: ${rB.verdict}`;
   document.getElementById('verdictSub').textContent = `Text A is ${rA.aiProb}% AI · Text B is ${rB.aiProb}% AI · Difference: ${Math.abs(rA.aiProb - rB.aiProb)}%`;
+  document.getElementById('highlightSection').style.display = 'none';
 
   document.getElementById('indicatorsList').innerHTML = Object.keys(rA.indicators).map(key => {
     const indA = rA.indicators[key];
@@ -997,18 +992,14 @@ async function compareAnalyze() {
   renderHistory();
 }
 
-// ══════════════════════════════════════════════════════════
-//  HISTORY
-// ══════════════════════════════════════════════════════════
+// ── HISTORY ──
 function renderHistory() {
   const section = document.getElementById('historySection');
   if (!history.length) { section.style.display = 'none'; return; }
   section.style.display = 'block';
   document.getElementById('historyList').innerHTML = history.map((item, i) => {
-    const cls = item.verdictClass === 'ai-generated' ? 'ai'
-              : item.verdictClass === 'human-written' ? 'human' : 'uncertain';
-    const label = item.verdictClass === 'ai-generated' ? 'AI'
-                : item.verdictClass === 'human-written' ? 'HUMAN' : 'UNSURE';
+    const cls = item.verdictClass === 'ai-generated' ? 'ai' : item.verdictClass === 'human-written' ? 'human' : 'uncertain';
+    const label = item.verdictClass === 'ai-generated' ? 'AI' : item.verdictClass === 'human-written' ? 'HUMAN' : 'UNSURE';
     return `
       <div class="history-item" onclick="loadHistoryItem(${i})">
         <span class="history-verdict ${cls}">${label}</span>
@@ -1024,16 +1015,13 @@ function loadHistoryItem(i) {
   const item = history[i];
   if (!item) return;
   document.getElementById('textInput').value = item.text;
-  document.getElementById('wordCount').textContent =
-    `${item.text.trim().split(/\s+/).filter(Boolean).length} words (truncated)`;
+  document.getElementById('textInput').dispatchEvent(new Event('input'));
   document.querySelectorAll('.mode-tab')[0]?.click();
   window.scrollTo({ top: 0, behavior: 'smooth' });
   toast('Loaded from history — paste full text to re-analyze');
 }
 
-// ══════════════════════════════════════════════════════════
-//  UI
-// ══════════════════════════════════════════════════════════
+// ── UI ──
 function switchMode(mode, btn) {
   currentMode = mode;
   document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
@@ -1044,13 +1032,20 @@ function switchMode(mode, btn) {
 }
 
 document.getElementById('textInput').addEventListener('input', function () {
-  const words = this.value.trim().split(/\s+/).filter(w => w).length;
-  document.getElementById('wordCount').textContent = `${words} words`;
+  const raw = this.value.trim();
+  const words = raw ? raw.split(/\s+/).filter(w => w).length : 0;
+  const chars = this.value.length;
+  document.getElementById('wordCount').textContent = `${words} words · ${chars} chars`;
 });
 
-// ══════════════════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════════════════
+document.getElementById('textInput').addEventListener('keydown', function (e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    analyze();
+  }
+});
+
+// ── INIT ──
 initTheme();
 renderHistory();
 </script>
