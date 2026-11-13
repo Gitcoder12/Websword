@@ -46,3 +46,15 @@ See [LICENSE](LICENSE).
 - [Company and team fit](COMPANY_FIT.md) · [README explanation draft](README_ADDENDUM_DRAFT.md)
 - [README quality checklist](README_QUALITY_CHECKLIST.md)
 - [Contributing](CONTRIBUTING.md) · [Agent instructions](AGENTS.md) · [Agent skills](SKILLS.md)
+
+## Understanding the project
+
+### In plain language
+
+A browser tool that examines writing patterns and shows heuristic signals that may be associated with AI-generated text.
+
+### Technical and research view
+
+The user pastes text into a browser page. The page calculates simple signals based on the current implementation and displays an estimate. That estimate is not proof of who wrote the text.
+
+See [FEATURE_UPGRADE_PLAN.md](FEATURE_UPGRADE_PLAN.md), [ACTIVITY_LOG.md](ACTIVITY_LOG.md), [COMPANY_FIT.md](COMPANY_FIT.md) and [CONTRIBUTING.md](CONTRIBUTING.md) for further technical and collaboration detail.
