@@ -1,60 +1,16 @@
 # WebSword
+Detects whether text was written by AI or a human, using simple writing-pattern signals.
+Live: https://gitcoder12.github.io/Websword/
 
-**A browser-based text-style analyser that estimates AI-like writing signals.**
-
-[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://gitcoder12.github.io/Websword/)
-[![License](https://img.shields.io/badge/license-see%20LICENSE-lightgrey)](LICENSE)
-
-WebSword is a lightweight, single-page experiment for examining text patterns that may be associated with machine-generated or human-written content.
-
-## Features
-
-- Paste text into a browser interface for analysis.
-- Inspect heuristic writing-pattern signals.
-- View an estimated result without installing a backend service.
-- Run as a static page.
-
-## Quick Start
-
-Open `index.html` in a modern browser, or serve the repository locally:
-
-```bash
-git clone https://github.com/Gitcoder12/Websword.git
-cd Websword
-python -m http.server 8000
-```
-
-Open `http://localhost:8000`.
-
-## Tech Stack
-
-HTML · CSS · JavaScript
-
-## Scope and Limitations
-
-WebSword's output is a heuristic estimate, not a reliable authorship determination. AI detectors can produce false positives and false negatives, especially for short, edited, translated, or non-native writing. Do not use this tool as the sole basis for academic, employment, disciplinary, or other high-impact decisions.
-
-## License
-
-See [LICENSE](LICENSE).
 
 ---
 
-## Project handbook
+## AI-maintained project notes (secondary — 2026-11-13)
 
-- [Activity log](ACTIVITY_LOG.md) · [Feature upgrade plan](FEATURE_UPGRADE_PLAN.md)
-- [Company and team fit](COMPANY_FIT.md) · [README explanation draft](README_ADDENDUM_DRAFT.md)
-- [README quality checklist](README_QUALITY_CHECKLIST.md)
-- [Contributing](CONTRIBUTING.md) · [Agent instructions](AGENTS.md) · [Agent skills](SKILLS.md)
+This section supplements the maintainer-authored README above. The original text has been restored verbatim from Git-history baseline `de875802850c5c01eb401d4331c1e8785a9e4c3d`; this addendum does not replace or certify the original claims.
 
-## Understanding the project
-
-### In plain language
-
-A browser tool that examines writing patterns and shows heuristic signals that may be associated with AI-generated text.
-
-### Technical and research view
-
-The user pastes text into a browser page. The page calculates simple signals based on the current implementation and displays an estimate. That estimate is not proof of who wrote the text.
-
-See [FEATURE_UPGRADE_PLAN.md](FEATURE_UPGRADE_PLAN.md), [ACTIVITY_LOG.md](ACTIVITY_LOG.md), [COMPANY_FIT.md](COMPANY_FIT.md) and [CONTRIBUTING.md](CONTRIBUTING.md) for further technical and collaboration detail.
+- The current source tree, runtime data and tests are the implementation source of truth. Roadmap items, draft PRs and AI-generated descriptions are not shipped features by themselves.
+- Preserve real and maintainer-provided data. Never silently substitute generated or placeholder data. Clearly label and isolate synthetic fixtures.
+- Mark unverified sources, identifiers, metrics, benchmark results and external claims as unknown/unverified rather than guessing.
+- Verify setup, execution, tests and public claims against the exact current commit before using this repository in a job, research or academic application.
+- See [MODEL_AUDIT_ROUTER.md](MODEL_AUDIT_ROUTER.md) for independent model review instructions and the merge gate.
