@@ -33,3 +33,10 @@ This section supplements the maintainer-authored README above. The original text
 3. Add clear user-facing limitations and privacy controls for locally stored text history.
 
 **Verification status:** static HTML/JavaScript inspection only; no detector benchmark or browser tests were run.
+
+---
+
+## Examples Used
+- Comparing a human-written paragraph with AI-generated text
+- Testing how paraphrasing changes writing-pattern signals
+- Measuring false positives on edited human writing
