@@ -33,3 +33,24 @@ This section supplements the maintainer-authored README above. The original text
 3. Add clear user-facing limitations and privacy controls for locally stored text history.
 
 **Verification status:** static HTML/JavaScript inspection only; no detector benchmark or browser tests were run.
+
+
+---
+
+## Branch Activity & Development History
+
+**Audit date:** 2026-11-18 · **Comparison base:** `main`
+
+| Branch | Difference from `main` | Observed work / changed paths |
+|---|---:|---|
+| `docs/portfolio-operating-kit-2026-11-13` | 4 ahead / 3 behind | Activity log, agent guidance, company-fit notes, feature plan, README support docs and skills; README has both additions and removals on this branch |
+| `docs/project-status-audit20261116` | Comparison unavailable | GitHub returned 404 for the comparison; recheck branch existence |
+| `docs/status-inventory-2026-11-16-v1` | 1 / 1 | Project status inventory: `PROJECT_STATUS.md` |
+
+### Open pull requests observed during this audit
+
+- [PR #3 — project status snapshot](https://github.com/Gitcoder12/Websword/pull/3)
+- [PR #2 — project status snapshot](https://github.com/Gitcoder12/Websword/pull/2)
+- [PR #1 — project handbook and evaluation roadmap](https://github.com/Gitcoder12/Websword/pull/1)
+
+**Review note:** The portfolio branch includes README removals as well as additions. This branch's README changes are not included in this append-only audit; review the diff carefully before any merge. No branches have been merged or deleted by this documentation update.
