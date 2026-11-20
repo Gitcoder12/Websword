@@ -2,6 +2,20 @@
 Detects whether text was written by AI or a human, using simple writing-pattern signals.
 Live: https://gitcoder12.github.io/Websword/
 
+## Open the website locally
+
+1. Open the repository folder in VS Code.
+2. In the terminal, run:
+
+```bash
+python -m http.server 8000
+```
+
+3. Open **http://localhost:8000** in your browser.
+4. Keep the terminal running while using the site; press **Ctrl+C** to stop it.
+
+This is a static HTML/JavaScript site; no npm build step is required.
+
 
 ---
 
