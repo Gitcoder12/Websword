@@ -40,3 +40,9 @@ This section supplements the maintainer-authored README above. The original text
 - Comparing a human-written paragraph with AI-generated text
 - Testing how paraphrasing changes writing-pattern signals
 - Measuring false positives on edited human writing
+
+---
+
+## Repository navigation
+
+[Alphabetical file index](FILE_INDEX.md)
